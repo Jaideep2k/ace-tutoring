@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mat Up! — Full Coverage Luxury Car Mats</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN (layout utilities only) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ─── CSS VARIABLES ─── */
+    :root {
+      --gold:        #B8965A;
+      --gold-light:  #D4B07A;
+      --gold-pale:   #E8D5B0;
+      --gold-dim:    #7A6035;
+      --champagne:   #F5EDD6;
+      --obsidian:    #0A0906;
+      --ink:         #0F0D0A;
+      --surface:     #141210;
+      --elevated:    #1C1916;
+      --float:       #252118;
+      --muted:       rgba(240,235,224,0.45);
+      --warm-white:  #F0EBE0;
+      --border:      rgba(184,150,90,.20);
+      --border-dim:  rgba(184,150,90,.09);
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body:    'Outfit', system-ui, sans-serif;
+      --nav-h: 72px;
+      --space-xs:  8px;
+      --space-sm:  16px;
+      --space-md:  24px;
+      --space-lg:  48px;
+      --space-xl:  80px;
+      --space-2xl: 120px;
+      --radius:    12px;
+      --radius-sm: 6px;
+      --radius-lg: 20px;
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--obsidian);
+      color: var(--warm-white);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ─── NAV ─── */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(24px, 5vw, 80px);
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition: background .4s ease, border-color .4s ease, backdrop-filter .4s ease;
+    }
+    #nav.scrolled {
+      background: rgba(10,9,6,.82);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      border-bottom-color: var(--border-dim);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--warm-white);
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--warm-white); }
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 22px;
+      background: var(--gold);
+      color: var(--obsidian);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-radius: 100px;
+      transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+      cursor: pointer;
+    }
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(184,150,90,.38);
+    }
+    .nav-cta:active { transform: translateY(0); }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .nav-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--warm-white); transition: transform .3s, opacity .3s; }
+
+    /* ─── VIDEO SCROLL ZONE ─── */
+    #video-scroll-zone {
+      position: relative;
+      height: 500vh;
+    }
+    #video-pin {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #scroll-canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      position: absolute;
+      inset: 0;
+    }
+    /* Loading bar */
+    #load-bar-wrap {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: rgba(184,150,90,.12);
+      z-index: 10;
+      transition: opacity .5s;
+    }
+    #load-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--gold);
+      transition: width .2s linear;
+    }
+    #vid-grain {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .035;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px;
+    }
+    .vid-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 clamp(32px, 8vw, 120px) clamp(60px, 8vh, 100px);
+      opacity: 0;
+      transition: opacity .6s cubic-bezier(.4,0,.2,1);
+      pointer-events: none;
+      background: linear-gradient(
+        to top,
+        rgba(10,9,6,.88) 0%,
+        rgba(10,9,6,.45) 38%,
+        rgba(10,9,6,.12) 60%,
+        transparent 75%
+      );
+    }
+    .vid-overlay.active { opacity: 1; pointer-events: auto; }
+    .ov-eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ov-eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--gold);
+    }
+    .ov-headline {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 7.5vw, 7rem);
+      font-weight: 600;
+      color: var(--warm-white);
+      letter-spacing: -0.03em;
+      line-height: 1.0;
+      margin-bottom: var(--space-md);
+    }
+    .ov-sub {
+      font-family: var(--font-body);
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      line-height: 1.65;
+      color: rgba(240,235,224,.6);
+      max-width: 480px;
+      margin-bottom: var(--space-lg);
+    }
+    .ov-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      background: var(--gold);
+      color: var(--obsidian);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: 100px;
+      transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s;
+      width: fit-content;
+    }
+    .ov-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 36px rgba(184,150,90,.4);
+    }
+    .ov-cta:active { transform: translateY(0); }
+
+    /* Scroll indicator */
+    #scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 1;
+      transition: opacity .4s;
+    }
+    #scroll-hint span {
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(240,235,224,.4);
+    }
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(184,150,90,.7), transparent);
+      animation: scrollPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: .4; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.15); }
+    }
+
+    /* ─── SECTION SHARED ─── */
+    section { position: relative; }
+    .section-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: var(--space-2xl) clamp(24px, 5vw, 80px);
+    }
+    .section-eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: var(--space-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-eyebrow::before {
+      content: '';
+      display: block;
+      width: 22px;
+      height: 1px;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(2.4rem, 4.5vw, 4rem);
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+      color: var(--warm-white);
+      margin-bottom: var(--space-md);
+    }
+    .section-title em { font-style: italic; color: var(--gold-light); }
+    .section-body {
+      font-size: 1rem;
+      line-height: 1.72;
+      color: var(--muted);
+      max-width: 560px;
+    }
+
+    /* ─── REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity .85s cubic-bezier(.4,0,.2,1), transform .85s cubic-bezier(.4,0,.2,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    /* ─── FEATURES SECTION ─── */
+    #features {
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(184,150,90,.065) 0%, transparent 65%),
+        var(--ink);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--border-dim);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-top: var(--space-xl);
+    }
+    .feature-card {
+      background: var(--elevated);
+      padding: clamp(32px, 4vw, 52px);
+      position: relative;
+      overflow: hidden;
+      transition: background .3s;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 20% 20%, rgba(184,150,90,.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .4s;
+    }
+    .feature-card:hover { background: var(--float); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-md);
+      color: var(--gold);
+    }
+    .feature-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+    .feature-num {
+      position: absolute;
+      top: 24px;
+      right: 28px;
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      font-weight: 600;
+      color: rgba(184,150,90,.07);
+      line-height: 1;
+      user-select: none;
+    }
+    .feature-title {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--warm-white);
+      margin-bottom: 10px;
+    }
+    .feature-desc {
+      font-size: 0.88rem;
+      line-height: 1.68;
+      color: var(--muted);
+    }
+
+    /* ─── VEHICLE FINDER ─── */
+    #find-your-fit {
+      background:
+        radial-gradient(ellipse 60% 60% at 15% 80%, rgba(184,150,90,.055) 0%, transparent 60%),
+        var(--surface);
+    }
+    .finder-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .finder-wrap .section-eyebrow { justify-content: center; }
+    .finder-wrap .section-eyebrow::before { display: none; }
+    .finder-wrap .section-body { margin: 0 auto var(--space-xl); }
+    .dropdown-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .veh-select {
+      width: 100%;
+      background: var(--elevated);
+      color: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 42px 14px 18px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 400;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23B8965A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .veh-select:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(184,150,90,.15);
+    }
+    .veh-select:disabled { opacity: .32; cursor: not-allowed; }
+    .veh-select option { background: var(--elevated); color: var(--warm-white); }
+    .search-btn {
+      width: 100%;
+      padding: 16px 32px;
+      background: var(--gold);
+      color: var(--obsidian);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s, opacity .2s;
+    }
+    .search-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(184,150,90,.38);
+    }
+    .search-btn:active:not(:disabled) { transform: translateY(0); }
+    .search-btn:disabled { opacity: .32; cursor: not-allowed; }
+    .cant-find {
+      margin-top: var(--space-md);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .cant-find a {
+      color: var(--gold-light);
+      border-bottom: 1px solid rgba(212,176,122,.3);
+      transition: border-color .2s, color .2s;
+    }
+    .cant-find a:hover { color: var(--gold-pale); border-bottom-color: var(--gold-light); }
+    #search-result {
+      margin-top: 20px;
+      padding: 14px 22px;
+      background: rgba(184,150,90,.1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      color: var(--gold-light);
+      opacity: 0;
+      transition: opacity .4s;
+      font-style: italic;
+    }
+
+    /* ─── PRODUCT DETAILS ─── */
+    #product {
+      background:
+        radial-gradient(ellipse 55% 55% at 90% 10%, rgba(184,150,90,.07) 0%, transparent 60%),
+        var(--obsidian);
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(40px, 6vw, 80px);
+      align-items: start;
+      margin-top: var(--space-xl);
+    }
+    .product-images {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: sticky;
+      top: calc(var(--nav-h) + 24px);
+    }
+    .product-img {
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+    }
+    .product-img img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      transition: transform .6s cubic-bezier(.4,0,.2,1);
+    }
+    .product-img:hover img { transform: scale(1.04); }
+    .product-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10,9,6,.45) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .product-content { padding-top: 8px; }
+    .material-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: var(--space-lg);
+    }
+    .mat-tab {
+      padding: 9px 20px;
+      border: 1px solid var(--border-dim);
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      cursor: pointer;
+      background: transparent;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .mat-tab.active, .mat-tab:hover {
+      border-color: var(--gold);
+      color: var(--gold-light);
+      background: rgba(184,150,90,.07);
+    }
+    .spec-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: var(--space-xl);
+    }
+    .spec-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    .spec-dot {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .spec-dot svg { width: 10px; height: 10px; stroke: var(--gold); fill: none; stroke-width: 2; }
+    .spec-label { font-weight: 500; color: var(--warm-white); }
+    .spec-desc { color: var(--muted); font-size: 0.85rem; }
+    .price-block {
+      border-top: 1px solid var(--border-dim);
+      padding-top: var(--space-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+    }
+    .price-tag {
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--warm-white);
+      line-height: 1;
+    }
+    .price-tag span {
+      font-size: 1rem;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-weight: 400;
+    }
+    .order-btn {
+      flex: 1;
+      padding: 15px 28px;
+      background: var(--gold);
+      color: var(--obsidian);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+    }
+    .order-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(184,150,90,.4);
+    }
+    .order-btn:active { transform: translateY(0); }
+
+    /* ─── WHY SECTION ─── */
+    #why {
+      background:
+        radial-gradient(ellipse 60% 70% at 30% 50%, rgba(184,150,90,.04) 0%, transparent 55%),
+        var(--ink);
+      border-top: 1px solid var(--border-dim);
+    }
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(40px, 7vw, 100px);
+      align-items: center;
+    }
+    .why-stat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      margin-top: var(--space-xl);
+    }
+    .why-stat {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 600;
+      color: var(--gold);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+      width: 80px;
+    }
+    .stat-text strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--warm-white);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+    .stat-text p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .why-visual {
+      position: relative;
+    }
+    .why-img-main {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+    }
+    .why-img-main img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+    }
+    .why-img-main::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(184,150,90,.08) 0%, transparent 50%);
+      mix-blend-mode: overlay;
+      pointer-events: none;
+    }
+    .why-badge {
+      position: absolute;
+      bottom: -20px;
+      left: -20px;
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(184,150,90,.08);
+    }
+    .why-badge-num {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .why-badge-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ─── CONTACT ─── */
+    #contact {
+      background:
+        radial-gradient(ellipse 50% 60% at 60% 40%, rgba(184,150,90,.04) 0%, transparent 60%),
+        var(--surface);
+      border-top: 1px solid var(--border-dim);
+    }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(40px, 7vw, 80px);
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: var(--space-md);
+    }
+    .form-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .form-input, .form-textarea {
+      background: var(--elevated);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--radius-sm);
+      padding: 13px 18px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--warm-white);
+      outline: none;
+      width: 100%;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(184,150,90,.12);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: rgba(240,235,224,.25); }
+    .form-textarea { resize: vertical; min-height: 120px; }
+    .form-submit {
+      width: 100%;
+      padding: 15px 28px;
+      background: var(--gold);
+      color: var(--obsidian);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+    }
+    .form-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(184,150,90,.38);
+    }
+    .form-submit:active { transform: translateY(0); }
+    .contact-info {
+      padding-left: clamp(24px, 4vw, 48px);
+      border-left: 1px solid var(--border-dim);
+    }
+    .info-block {
+      margin-top: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+    .info-item {}
+    .info-item-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .info-item-value {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--warm-white);
+      line-height: 1.45;
+    }
+    .info-item-value a { transition: color .2s; }
+    .info-item-value a:hover { color: var(--gold-light); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--obsidian);
+      border-top: 1px solid var(--border-dim);
+      padding: 0 clamp(24px, 5vw, 80px);
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--warm-white);
+    }
+    .footer-logo span { color: var(--gold); }
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--warm-white); }
+    .footer-copy {
+      font-size: 0.72rem;
+      color: rgba(240,235,224,.25);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .product-grid, .why-grid, .contact-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .product-images { position: static; }
+      .contact-info { padding-left: 0; border-left: none; border-top: 1px solid var(--border-dim); padding-top: var(--space-lg); }
+      .why-badge { bottom: 16px; left: 16px; }
+      footer { flex-direction: column; height: auto; padding: 24px; gap: 16px; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .dropdown-row { grid-template-columns: 1fr; }
+      .price-block { flex-direction: column; align-items: flex-start; }
+      .material-tabs { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SVG grain filter (hidden) -->
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <filter id="grain-f" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="saturate" values="0" in="noise" result="grey"/>
+      <feComposite in="SourceGraphic" in2="grey" operator="in"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ═══════════════════════════════ NAV ═══════════════════════════════ -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Mat <span>Up!</span></a>
+
+  <ul class="nav-links">
+    <li><a href="#features">Coverage</a></li>
+    <li><a href="#find-your-fit">Vehicles</a></li>
+    <li><a href="#product">Details</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+
+  <a href="#find-your-fit" class="nav-cta">Find Your Fit →</a>
+
+  <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════ HERO VIDEO ═══════════════════════ -->
+<div id="video-scroll-zone">
+  <div id="video-pin">
+    <canvas id="scroll-canvas" aria-hidden="true"></canvas>
+
+    <!-- Loading bar -->
+    <div id="load-bar-wrap"><div id="load-bar"></div></div>
+
+    <div id="vid-grain" aria-hidden="true"></div>
+
+    <!-- Overlay 0: Intro -->
+    <div class="vid-overlay active" id="ov-0">
+      <p class="ov-eyebrow">Premium Car Mats</p>
+      <h1 class="ov-headline">Every inch.<br>Covered.</h1>
+      <p class="ov-sub">Full-coverage luxury mats engineered so not a single thread of carpet is left exposed.</p>
+    </div>
+
+    <!-- Overlay 1: Fit -->
+    <div class="vid-overlay" id="ov-1">
+      <p class="ov-eyebrow">Precision Engineered</p>
+      <h2 class="ov-headline">Built for the<br><em style="font-style:italic;color:var(--gold-light)">Model Y.</em></h2>
+      <p class="ov-sub">Die-cut to match every contour, ridge, and curve of your Tesla's interior.</p>
+    </div>
+
+    <!-- Overlay 2: Install -->
+    <div class="vid-overlay" id="ov-2">
+      <p class="ov-eyebrow">Seamless Installation</p>
+      <h2 class="ov-headline">From flat<br>to fitted.</h2>
+      <p class="ov-sub">Snap in within seconds. No scissors, no trimming, no guesswork.</p>
+    </div>
+
+    <!-- Overlay 3: CTA -->
+    <div class="vid-overlay" id="ov-3">
+      <p class="ov-eyebrow">Mat Up!</p>
+      <h2 class="ov-headline">Zero carpet.<br>Zero compromise.</h2>
+      <a href="#find-your-fit" class="ov-cta">Find Your Fit →</a>
+    </div>
+
+    <!-- Scroll hint -->
+    <div id="scroll-hint" aria-hidden="true">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ FEATURES ═══════════════════════════ -->
+<section id="features">
+  <div class="section-inner">
+    <p class="section-eyebrow reveal">What Sets Us Apart</p>
+    <h2 class="section-title reveal reveal-delay-1">Premium protection,<br><em>floor to door.</em></h2>
+    <p class="section-body reveal reveal-delay-2">Standard mats protect pockets of your floor. Mat Up! mats protect every single centimetre — front, rear, and cargo — in a single seamless fit.</p>
+
+    <div class="features-grid">
+      <!-- Card 1 -->
+      <div class="feature-card reveal">
+        <span class="feature-num">01</span>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20M9 21V9"/></svg>
+        </div>
+        <h3 class="feature-title">Full Floor Coverage</h3>
+        <p class="feature-desc">Every mat extends edge-to-edge. No exposed carpet, no gaps behind the seat bolsters, no patches missed. The entire cabin floor is protected.</p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="feature-card reveal reveal-delay-1">
+        <span class="feature-num">02</span>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <h3 class="feature-title">Precision Die-Cut Fit</h3>
+        <p class="feature-desc">Laser-measured and die-cut for your exact vehicle year and trim. Every bump, ridge, and anchor point accounted for — no trimming required.</p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="feature-card reveal reveal-delay-2">
+        <span class="feature-num">03</span>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 6.5L22 9.3l-5 4.9 1.2 6.8L12 17.7l-6.2 3.3L7 14.2 2 9.3l7-0.8z"/></svg>
+        </div>
+        <h3 class="feature-title">Premium TPE Material</h3>
+        <p class="feature-desc">Thermoplastic elastomer — flexible in the cold, firm in the heat. Odourless, non-toxic, and engineered to last the lifetime of your vehicle.</p>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="feature-card reveal reveal-delay-3">
+        <span class="feature-num">04</span>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 class="feature-title">Odour &amp; Stain Resistant</h3>
+        <p class="feature-desc">Raised lip channels keep spills contained. A single wipe removes mud, coffee, and slush. Your car stays showroom-clean, every day.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ VEHICLE FINDER ════════════════════ -->
+<section id="find-your-fit">
+  <div class="section-inner">
+    <div class="finder-wrap">
+      <p class="section-eyebrow reveal">Custom Fit</p>
+      <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">Find Mats For<br><em>Your Vehicle</em></h2>
+      <p class="section-body reveal reveal-delay-2" style="text-align:center;margin:0 auto var(--space-xl);">Select your vehicle below and we'll show you the exact mat set engineered for your car.</p>
+
+      <div class="reveal reveal-delay-2">
+        <div class="dropdown-row">
+          <select id="sel-make" class="veh-select">
+            <option value="">Select Make</option>
+          </select>
+          <select id="sel-model" class="veh-select" disabled>
+            <option value="">Select Model</option>
+          </select>
+          <select id="sel-year" class="veh-select" disabled>
+            <option value="">Select Year</option>
+          </select>
+        </div>
+
+        <button id="search-btn" class="search-btn" disabled>Search Mats</button>
+
+        <p id="search-result"></p>
+
+        <p class="cant-find">Can't find your vehicle? <a href="#contact">Contact us for a custom fit</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ PRODUCT ═══════════════════════════ -->
+<section id="product">
+  <div class="section-inner">
+    <p class="section-eyebrow reveal">The Mat</p>
+    <h2 class="section-title reveal reveal-delay-1">Engineered for<br><em>luxury interiors.</em></h2>
+
+    <div class="product-grid">
+      <!-- Images -->
+      <div class="product-images reveal">
+        <div class="product-img">
+          <img src="https://placehold.co/800x600/141210/B8965A?text=Full+Coverage+Mat" alt="Full coverage car mat set" loading="lazy">
+        </div>
+        <div class="product-img">
+          <img src="https://placehold.co/800x600/1C1916/D4B07A?text=Interior+Installed" alt="Mat installed in vehicle" loading="lazy">
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="product-content reveal reveal-delay-2">
+        <div class="material-tabs">
+          <button class="mat-tab active" data-mat="tpe">TPE Luxury</button>
+          <button class="mat-tab" data-mat="rubber">Premium Rubber</button>
+          <button class="mat-tab" data-mat="leather">Leather Trim</button>
+        </div>
+
+        <ul class="spec-list">
+          <li class="spec-item">
+            <div class="spec-dot"><svg viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1"/></svg></div>
+            <div>
+              <span class="spec-label">Edge-to-edge floor coverage</span><br>
+              <span class="spec-desc">Extends to door sills, under seat rails, and behind pedals</span>
+            </div>
+          </li>
+          <li class="spec-item">
+            <div class="spec-dot"><svg viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1"/></svg></div>
+            <div>
+              <span class="spec-label">20mm raised containment lip</span><br>
+              <span class="spec-desc">Keeps spills, mud, and debris away from the carpet</span>
+            </div>
+          </li>
+          <li class="spec-item">
+            <div class="spec-dot"><svg viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1"/></svg></div>
+            <div>
+              <span class="spec-label">OEM anchor point system</span><br>
+              <span class="spec-desc">Locks onto factory floor clips — mats never slip or bunch</span>
+            </div>
+          </li>
+          <li class="spec-item">
+            <div class="spec-dot"><svg viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1"/></svg></div>
+            <div>
+              <span class="spec-label">Hose-off clean in 30 seconds</span><br>
+              <span class="spec-desc">Non-porous surface releases dirt with a single rinse</span>
+            </div>
+          </li>
+          <li class="spec-item">
+            <div class="spec-dot"><svg viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1"/></svg></div>
+            <div>
+              <span class="spec-label">Lifetime warranty</span><br>
+              <span class="spec-desc">If it ever cracks, warps, or fades — we replace it. No questions.</span>
+            </div>
+          </li>
+        </ul>
+
+        <div class="price-block">
+          <div>
+            <p class="price-tag">$149 <span>CAD</span></p>
+            <p style="font-size:0.75rem;color:var(--muted);margin-top:4px;">Full 4-piece set · Free shipping</p>
+          </div>
+          <button class="order-btn" onclick="document.getElementById('find-your-fit').scrollIntoView({behavior:'smooth'})">Order Now →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ WHY ═══════════════════════════════ -->
+<section id="why">
+  <div class="section-inner">
+    <div class="why-grid">
+      <div>
+        <p class="section-eyebrow reveal">Why Mat Up!</p>
+        <h2 class="section-title reveal reveal-delay-1">The difference is<br><em>in the details.</em></h2>
+        <p class="section-body reveal reveal-delay-2">Most car mats are generic rectangles. Mat Up! mats are engineered for a single purpose: leave no carpet unprotected. It's the last set of mats you'll ever buy.</p>
+
+        <div class="why-stat-list">
+          <div class="why-stat reveal reveal-delay-1">
+            <div class="stat-num">100%</div>
+            <div class="stat-text">
+              <strong>Floor Coverage</strong>
+              <p>From the pedal box to the seat rails — every square centimetre of carpet is covered by Mat Up! mats.</p>
+            </div>
+          </div>
+          <div class="why-stat reveal reveal-delay-2">
+            <div class="stat-num">3×</div>
+            <div class="stat-text">
+              <strong>Thicker Than Standard</strong>
+              <p>7mm TPE compound versus the 2mm rubber used in typical aftermarket mats. Built to absorb impacts and muffle road noise.</p>
+            </div>
+          </div>
+          <div class="why-stat reveal reveal-delay-3">
+            <div class="stat-num">∞</div>
+            <div class="stat-text">
+              <strong>Lifetime Guarantee</strong>
+              <p>We stand behind every mat for the life of your vehicle. No expiry, no fine print.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="why-visual reveal reveal-delay-2">
+        <div class="why-img-main">
+          <img src="https://placehold.co/600x800/1C1916/B8965A?text=Mat+Up!+Coverage" alt="Mat Up! full coverage demonstration" loading="lazy">
+        </div>
+        <div class="why-badge">
+          <div class="why-badge-num">4.9★</div>
+          <div class="why-badge-label">Customer Rating</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ CONTACT ════════════════════════════ -->
+<section id="contact">
+  <div class="section-inner">
+    <p class="section-eyebrow reveal">Get In Touch</p>
+    <h2 class="section-title reveal reveal-delay-1">We'd love to<br><em>hear from you.</em></h2>
+
+    <div class="contact-grid" style="margin-top:var(--space-xl)">
+      <!-- Form -->
+      <form class="reveal reveal-delay-1" onsubmit="return false;">
+        <div class="form-group">
+          <label class="form-label" for="f-name">Full Name</label>
+          <input id="f-name" class="form-input" type="text" placeholder="Your name" autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-email">Email Address</label>
+          <input id="f-email" class="form-input" type="email" placeholder="your@email.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-vehicle">Your Vehicle</label>
+          <input id="f-vehicle" class="form-input" type="text" placeholder="e.g. 2023 Tesla Model Y">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-msg">Message</label>
+          <textarea id="f-msg" class="form-textarea" placeholder="How can we help?"></textarea>
+        </div>
+        <button type="submit" class="form-submit">Send Message →</button>
+      </form>
+
+      <!-- Info -->
+      <div class="contact-info reveal reveal-delay-2">
+        <p class="section-eyebrow" style="margin-bottom:var(--space-md)">Our Details</p>
+        <div class="info-block">
+          <div class="info-item">
+            <p class="info-item-label">Address</p>
+            <p class="info-item-value">4-1455 Britannia Road E<br>Mississauga, ON L4W 1C7<br>Canada</p>
+          </div>
+          <div class="info-item">
+            <p class="info-item-label">Phone</p>
+            <p class="info-item-value"><a href="tel:+12363804428">+1 (236) 380 4428</a></p>
+          </div>
+          <div class="info-item">
+            <p class="info-item-label">Hours</p>
+            <p class="info-item-value" style="font-family:var(--font-body);font-size:0.95rem;line-height:1.7">Mon – Fri: 9am – 6pm EST<br>Sat: 10am – 4pm EST<br>Sun: Closed</p>
+          </div>
+          <div class="info-item">
+            <p class="info-item-label">Custom Orders</p>
+            <p class="section-body" style="max-width:none;font-size:0.85rem">Can't find your vehicle in our catalogue? We offer custom full-coverage mat fabrication for any make and model. Lead time is 7–10 business days.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ FOOTER ════════════════════════════ -->
+<footer>
+  <div class="footer-logo">Mat <span>Up!</span></div>
+  <ul class="footer-links">
+    <li><a href="#features">Coverage</a></li>
+    <li><a href="#find-your-fit">Vehicles</a></li>
+    <li><a href="#product">Details</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <p class="footer-copy">© 2025 Mat Up! Inc. Mississauga, ON</p>
+</footer>
+
+<!-- ═══════════════════════════════ JAVASCRIPT ════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  // ── NAV scroll state ──
+  const nav = document.getElementById('nav');
+  function updateNav() {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // ── Scroll hint fade ──
+  const scrollHint = document.getElementById('scroll-hint');
+  function updateScrollHint() {
+    scrollHint.style.opacity = window.scrollY > 80 ? '0' : '1';
+  }
+  window.addEventListener('scroll', updateScrollHint, { passive: true });
+
+  // ── CANVAS FRAME ANIMATION ──
+  const canvas   = document.getElementById('scroll-canvas');
+  const ctx      = canvas.getContext('2d');
+  const zone     = document.getElementById('video-scroll-zone');
+  const loadBar  = document.getElementById('load-bar');
+  const loadWrap = document.getElementById('load-bar-wrap');
+  const ovs      = [
+    document.getElementById('ov-0'),
+    document.getElementById('ov-1'),
+    document.getElementById('ov-2'),
+    document.getElementById('ov-3'),
+  ];
+  const KF = [
+    [0.00, 0.22],
+    [0.22, 0.52],
+    [0.52, 0.78],
+    [0.78, 1.00],
+  ];
+
+  const TOTAL_FRAMES = 121;
+  const frames = new Array(TOTAL_FRAMES);
+  let loadedCount = 0;
+  let currentFrame = 0;
+  let rafId = null;
+
+  // Responsive zone height
+  function setZoneHeight() {
+    const h = window.innerWidth < 768 ? 350 : 500;
+    zone.style.height = h + 'vh';
+  }
+  setZoneHeight();
+  window.addEventListener('resize', () => { setZoneHeight(); fitCanvas(); }, { passive: true });
+
+  // Fit canvas to viewport
+  function fitCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    drawFrame(currentFrame);
+  }
+  fitCanvas();
+
+  // Draw a frame onto the canvas, cover-fit
+  function drawFrame(idx) {
+    const img = frames[idx];
+    if (!img || !img.complete || !img.naturalWidth) return;
+    const cw = canvas.width, ch = canvas.height;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const scale = Math.max(cw / iw, ch / ih);
+    const dw = iw * scale, dh = ih * scale;
+    const dx = (cw - dw) / 2, dy = (ch - dh) / 2;
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+
+  // Load all frames
+  for (let i = 1; i <= TOTAL_FRAMES; i++) {
+    const img = new Image();
+    const num = String(i).padStart(4, '0');
+    img.src = `/Matup!/frames/frame_${num}.jpg`;
+    img.onload = () => {
+      loadedCount++;
+      const pct = Math.round((loadedCount / TOTAL_FRAMES) * 100);
+      loadBar.style.width = pct + '%';
+      // Draw first frame immediately once loaded
+      if (i === 1) { currentFrame = 0; drawFrame(0); }
+      // Hide loader when all done
+      if (loadedCount === TOTAL_FRAMES) {
+        setTimeout(() => { loadWrap.style.opacity = '0'; }, 300);
+      }
+    };
+    frames[i - 1] = img;
+  }
+
+  // Smooth scroll: tween current frame toward target
+  let targetFrame = 0;
+  let displayFrame = 0;
+
+  function getProgress() {
+    const zoneTop    = zone.getBoundingClientRect().top + window.scrollY;
+    const zoneHeight = zone.offsetHeight - window.innerHeight;
+    const scrolled   = window.scrollY - zoneTop;
+    return Math.min(Math.max(scrolled / zoneHeight, 0), 1);
+  }
+
+  function animLoop() {
+    rafId = requestAnimationFrame(animLoop);
+    // Ease displayFrame toward targetFrame
+    const diff = targetFrame - displayFrame;
+    if (Math.abs(diff) < 0.5) {
+      displayFrame = targetFrame;
+    } else {
+      displayFrame += diff * 0.18; // easing factor — higher = faster
+    }
+    const idx = Math.round(displayFrame);
+    if (idx !== currentFrame) {
+      currentFrame = idx;
+      drawFrame(idx);
+    }
+  }
+  animLoop();
+
+  function onScroll() {
+    const progress = getProgress();
+    targetFrame = Math.min(Math.round(progress * (TOTAL_FRAMES - 1)), TOTAL_FRAMES - 1);
+
+    // Toggle overlays
+    ovs.forEach((el, i) => {
+      const [show, hide] = KF[i];
+      el.classList.toggle('active', progress >= show && progress < hide);
+    });
+    if (progress >= 0.78) ovs[3].classList.add('active');
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ── INTERSECTION OBSERVER (reveal) ──
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ── VEHICLE SEARCH ──
+  const vehicleData = {
+    Tesla:    { 'Model Y': [2020,2021,2022,2023,2024,2025], 'Model 3': [2017,2018,2019,2020,2021,2022,2023,2024], 'Model S': [2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023], 'Model X': [2016,2017,2018,2019,2020,2021,2022,2023] },
+    BMW:      { '3 Series': [2019,2020,2021,2022,2023,2024], '5 Series': [2017,2018,2019,2020,2021,2022,2023,2024], 'X5': [2019,2020,2021,2022,2023,2024], 'X3': [2018,2019,2020,2021,2022,2023,2024], 'X7': [2019,2020,2021,2022,2023,2024] },
+    Mercedes: { 'C-Class': [2019,2020,2021,2022,2023,2024], 'E-Class': [2017,2018,2019,2020,2021,2022,2023,2024], 'GLE': [2020,2021,2022,2023,2024], 'GLC': [2016,2017,2018,2019,2020,2021,2022,2023,2024], 'S-Class': [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024] },
+    Audi:     { 'A4': [2017,2018,2019,2020,2021,2022,2023,2024], 'Q5': [2018,2019,2020,2021,2022,2023,2024], 'A6': [2019,2020,2021,2022,2023,2024], 'Q7': [2016,2017,2018,2019,2020,2021,2022,2023,2024], 'Q8': [2019,2020,2021,2022,2023,2024] },
+    Lexus:    { 'RX': [2016,2017,2018,2019,2020,2021,2022,2023,2024], 'ES': [2019,2020,2021,2022,2023,2024], 'NX': [2015,2016,2017,2018,2019,2020,2021,2022,2023,2024], 'GX': [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023] },
+    Porsche:  { 'Cayenne': [2018,2019,2020,2021,2022,2023,2024], 'Macan': [2015,2016,2017,2018,2019,2020,2021,2022,2023,2024], 'Panamera': [2017,2018,2019,2020,2021,2022,2023,2024] },
+    Toyota:   { 'Camry': [2018,2019,2020,2021,2022,2023,2024], 'RAV4': [2019,2020,2021,2022,2023,2024], 'Highlander': [2020,2021,2022,2023,2024], 'Prius': [2016,2017,2018,2019,2020,2021,2022,2023,2024], 'Tundra': [2022,2023,2024] },
+    Honda:    { 'Accord': [2018,2019,2020,2021,2022,2023,2024], 'CR-V': [2017,2018,2019,2020,2021,2022,2023,2024], 'Pilot': [2016,2017,2018,2019,2020,2021,2022,2023,2024], 'Civic': [2016,2017,2018,2019,2020,2021,2022,2023,2024] },
+    Ford:     { 'F-150': [2019,2020,2021,2022,2023,2024], 'Explorer': [2020,2021,2022,2023,2024], 'Mustang': [2015,2016,2017,2018,2019,2020,2021,2022,2023,2024], 'Bronco': [2021,2022,2023,2024], 'Edge': [2019,2020,2021,2022,2023] },
+    Chevrolet: { 'Equinox': [2018,2019,2020,2021,2022,2023,2024], 'Silverado': [2019,2020,2021,2022,2023,2024], 'Suburban': [2015,2016,2017,2018,2019,2020,2021,2022,2023,2024], 'Tahoe': [2015,2016,2017,2018,2019,2020,2021,2022,2023,2024] },
+    Jeep:     { 'Wrangler': [2018,2019,2020,2021,2022,2023,2024], 'Grand Cherokee': [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024], 'Gladiator': [2020,2021,2022,2023,2024] },
+    Hyundai:  { 'Tucson': [2016,2017,2018,2019,2020,2021,2022,2023,2024], 'Santa Fe': [2019,2020,2021,2022,2023,2024], 'Elantra': [2017,2018,2019,2020,2021,2022,2023,2024] },
+    Kia:      { 'Telluride': [2020,2021,2022,2023,2024], 'Sorento': [2021,2022,2023,2024], 'Sportage': [2017,2018,2019,2020,2021,2022,2023,2024] },
+    Volkswagen: { 'Atlas': [2018,2019,2020,2021,2022,2023,2024], 'Tiguan': [2018,2019,2020,2021,2022,2023,2024], 'ID.4': [2021,2022,2023,2024] },
+    Ram:      { '1500': [2019,2020,2021,2022,2023,2024], '2500': [2019,2020,2021,2022,2023,2024] },
+    Cadillac: { 'Escalade': [2015,2016,2017,2018,2019,2020,2021,2022,2023,2024], 'XT5': [2017,2018,2019,2020,2021,2022,2023,2024] },
+  };
+
+  const selMake   = document.getElementById('sel-make');
+  const selModel  = document.getElementById('sel-model');
+  const selYear   = document.getElementById('sel-year');
+  const searchBtn = document.getElementById('search-btn');
+  const searchRes = document.getElementById('search-result');
+
+  function populateSelect(sel, items, placeholder) {
+    sel.innerHTML = `<option value="">${placeholder}</option>`;
+    items.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item;
+      opt.textContent = item;
+      sel.appendChild(opt);
+    });
+  }
+
+  // Populate makes on load
+  populateSelect(selMake, Object.keys(vehicleData).sort(), 'Select Make');
+
+  selMake.addEventListener('change', () => {
+    const make = selMake.value;
+    selModel.innerHTML = '<option value="">Select Model</option>';
+    selYear.innerHTML  = '<option value="">Select Year</option>';
+    selModel.disabled  = !make;
+    selYear.disabled   = true;
+    searchBtn.disabled = true;
+    if (make) populateSelect(selModel, Object.keys(vehicleData[make]).sort(), 'Select Model');
+  });
+
+  selModel.addEventListener('change', () => {
+    const make  = selMake.value;
+    const model = selModel.value;
+    selYear.innerHTML = '<option value="">Select Year</option>';
+    selYear.disabled  = !model;
+    searchBtn.disabled = true;
+    if (model) {
+      const years = [...vehicleData[make][model]].sort((a, b) => b - a);
+      populateSelect(selYear, years, 'Select Year');
+    }
+  });
+
+  selYear.addEventListener('change', () => {
+    searchBtn.disabled = !selYear.value;
+  });
+
+  searchBtn.addEventListener('click', () => {
+    const make  = selMake.value;
+    const model = selModel.value;
+    const year  = selYear.value;
+    if (make && model && year) {
+      searchRes.textContent = `Mats found: ${year} ${make} ${model} — Full Coverage Set from $149 CAD`;
+      searchRes.style.opacity = '1';
+      setTimeout(() => {
+        document.getElementById('product').scrollIntoView({ behavior: 'smooth' });
+      }, 600);
+    }
+  });
+
+  // ── MATERIAL TABS ──
+  const matTabs = document.querySelectorAll('.mat-tab');
+  matTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      matTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
