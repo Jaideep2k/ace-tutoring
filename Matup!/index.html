@@ -1276,7 +1276,7 @@
   for (let i = 1; i <= TOTAL_FRAMES; i++) {
     const img = new Image();
     const num = String(i).padStart(4, '0');
-    img.src = `/Matup!/frames/frame_${num}.jpg`;
+    img.src = `./frames/frame_${num}.jpg`;
     img.onload = () => {
       loadedCount++;
       const pct = Math.round((loadedCount / TOTAL_FRAMES) * 100);
